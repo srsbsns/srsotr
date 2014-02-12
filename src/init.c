@@ -24,6 +24,7 @@
 #include "sig.h"
 #include "misc.h"
 #include "log.h"
+#include "otr.h"
 
 #include "init.h"
 
@@ -68,6 +69,8 @@ init(int *argc, char ***argv)
 	signal(SIGTERM, sig_hnd);
 	signal(SIGUSR1, sig_hnd);
 	signal(SIGUSR2, sig_hnd);
+
+	otr_init();
 
 	return &sett;
 }

@@ -18,6 +18,7 @@ AC_PROG_MAKE_SET
 AC_CHECK_HEADERS([stddef.h stdint.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
 
 AC_CHECK_LIB([srsbsns], [ringbuf_init], [], [AC_MSG_ERROR([libsrsbsns not installed?])])
+AC_CHECK_LIB([otr], [otrl_version], [], [AC_MSG_ERROR([libotr not installed?])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
