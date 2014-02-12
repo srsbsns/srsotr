@@ -15,6 +15,18 @@ AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
+AC_CHECK_HEADERS([stddef.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_TYPE_SIZE_T
+AC_TYPE_UINT8_T
+
+# Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_STRERROR_R
+AC_CHECK_FUNCS([strchr strdup])
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile])
 AC_OUTPUT
