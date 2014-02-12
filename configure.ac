@@ -25,7 +25,7 @@ AC_TYPE_UINT8_T
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([strchr strdup])
+AC_CHECK_FUNCS([strchr strdup strtoul])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])

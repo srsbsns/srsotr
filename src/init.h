@@ -8,6 +8,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void init(int *argc, char ***argv);
+struct sett_s {
+	unsigned short lport;
+	char lif[128];
+};
+
+const struct sett_s* init(int *argc, char ***argv);
 
 #endif /* INIT_H */

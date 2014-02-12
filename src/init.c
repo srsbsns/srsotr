@@ -32,6 +32,8 @@ static char *s_sgid;
 static bool s_nodaemon;
 static int s_verb = LOG_WARNING;
 
+struct sett_s sett = {0, ""};
+
 static void process_args(int *argc, char ***argv);
 static void setugid(void);
 static void detach(void);
@@ -40,7 +42,7 @@ static void usage(FILE *str, const char *a0, int ec);
 
 // ----- public interface implementation -----
 
-void
+const struct sett_s*
 init(int *argc, char ***argv)
 {
 	process_args(argc, argv);
@@ -66,6 +68,8 @@ init(int *argc, char ***argv)
 	signal(SIGTERM, sig_hnd);
 	signal(SIGUSR1, sig_hnd);
 	signal(SIGUSR2, sig_hnd);
+
+	return &sett;
 }
 
 // ---- local helpers ---- 
@@ -141,7 +145,7 @@ process_args(int *argc, char ***argv)
 {
 	char *a0 = (*argv)[0];
 
-	for(int ch; (ch = getopt(*argc, *argv, "u:nvqh")) != -1;) {
+	for(int ch; (ch = getopt(*argc, *argv, "i:p:u:nvqh")) != -1;) {
 		switch (ch) {
 		case 'u':{
 			s_suid = strdup(optarg);
@@ -151,6 +155,13 @@ process_args(int *argc, char ***argv)
 				s_sgid = strdup(ptr+1);
 			}
 			break;}
+		case 'i':
+			strNcpy(sett.lif, optarg, sizeof sett.lif);
+			break;
+		case 'p':
+			sett.lport =
+			    (unsigned short)strtoul(optarg, NULL, 0);
+			break;
 		case 'n':
 			s_nodaemon = true;
 			break;
