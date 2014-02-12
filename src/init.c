@@ -32,7 +32,7 @@ static char *s_sgid;
 static bool s_nodaemon;
 static int s_verb = LOG_WARNING;
 
-struct sett_s sett = {0, ""};
+struct sett_s sett = {7776, "127.0.0.1", "irc.example.org:6667"};
 
 static void process_args(int *argc, char ***argv);
 static void setugid(void);
@@ -145,7 +145,7 @@ process_args(int *argc, char ***argv)
 {
 	char *a0 = (*argv)[0];
 
-	for(int ch; (ch = getopt(*argc, *argv, "i:p:u:nvqh")) != -1;) {
+	for(int ch; (ch = getopt(*argc, *argv, "s:i:p:u:nvqh")) != -1;) {
 		switch (ch) {
 		case 'u':{
 			s_suid = strdup(optarg);
@@ -161,6 +161,9 @@ process_args(int *argc, char ***argv)
 		case 'p':
 			sett.lport =
 			    (unsigned short)strtoul(optarg, NULL, 0);
+			break;
+		case 's':
+			strNcpy(sett.rhost, optarg, sizeof sett.rhost);
 			break;
 		case 'n':
 			s_nodaemon = true;
