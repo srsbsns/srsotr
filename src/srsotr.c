@@ -41,7 +41,7 @@ main(int argc, char **argv)
 	int lsck = sck_listen(settings->lif, settings->lport);
 
 	if (lsck == -1)
-		EX("failed to make listener");
+		C("failed to make listener");
 
 	D("opened listener");
 
@@ -66,13 +66,13 @@ handle_client(int sck)
 	D("remote host: '%s:%hu'", host, port);
 	int isck = addr_connect_socket(host, port);
 	if (isck == -1)
-		EX("failed to make or connect socket");
+		C("failed to make or connect socket");
 
 	for (;;) {
 		char linebuf[1024];
 		int r = sck_pollln(sck, linebuf, sizeof linebuf);
 		if (r == -1)
-			EEX("failed to read line from client");
+			CE("failed to read line from client");
 
 		if (r != 0) {
 			D("read line from client: '%s'", linebuf);
@@ -86,7 +86,7 @@ handle_client(int sck)
 		r = sck_pollln(isck, linebuf, sizeof linebuf);
 
 		if (r == -1)
-			EEX("failed to read from irc server");
+			CE("failed to read from irc server");
 
 		if (r != 0) {
 			D("read line from ircd: '%s'", linebuf);
@@ -113,7 +113,7 @@ handle_irc_msg(const char *line)
 		cmdpos = strchr(line, ' ');
 
 	if (!cmdpos)
-		EX("parse error (line: '%s')", line);
+		C("parse error (line: '%s')", line);
 	
 	cmdpos++;
 	

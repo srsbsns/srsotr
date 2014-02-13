@@ -7,9 +7,9 @@
 
 #include <syslog.h>
 
-//[DINWE](): log message with Debug, Info, Notice, Warning, Error severity.
-//[DINWE]E(): similar, but also append ``errno'' message
-//*X(): similar, but exit(1) after logging
+//[DINWEC](): log with Debug, Info, Notice, Warn, Error, Critical severity.
+// Critical will also call exit(EXIT_FAILURE)
+//[DINWEC]E(): similar, but also append ``errno'' message
  
 // ----- logging interface -----
 
@@ -43,11 +43,11 @@
 #define EE(F,A...)                                              \
     log_log(LOG_ERR,errno,__FILE__,__LINE__,__func__,F,##A)
 
-#define EX(F,A...)                                              \
-    do{log_log(LOG_ERR,-1,__FILE__,__LINE__,__func__,F,##A);    \
+#define C(F,A...)                                              \
+    do{log_log(LOG_CRIT,-1,__FILE__,__LINE__,__func__,F,##A);    \
                       exit(EXIT_FAILURE); }while(0)
-#define EEX(F,A...)                                             \
-    do{log_log(LOG_ERR,errno,__FILE__,__LINE__,__func__,F,##A); \
+#define CE(F,A...)                                             \
+    do{log_log(LOG_CRIT,errno,__FILE__,__LINE__,__func__,F,##A); \
                        exit(EXIT_FAILURE); }while(0)
 
 // ----- logger control interface -----

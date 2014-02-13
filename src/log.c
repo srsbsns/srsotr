@@ -105,5 +105,6 @@ lvlnam(int lvl)
 	       lvl == LOG_INFO ? "INF" :
 	       lvl == LOG_NOTICE ? "NOT" :
 	       lvl == LOG_WARNING ? "WRN" :
+	       lvl == LOG_CRIT ? "CRT" :
 	       lvl == LOG_ERR ? "ERR" : "???";
 }

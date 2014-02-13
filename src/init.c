@@ -111,7 +111,7 @@ detach(void)
 	signal(SIGTTIN, SIG_IGN);
 
 	if ((r = fork()) == -1)
-		EX("failed to fork, exiting!");
+		C("failed to fork, exiting!");
 	else if (r > 0)
 		exit(EXIT_SUCCESS);
 
