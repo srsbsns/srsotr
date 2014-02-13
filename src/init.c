@@ -148,7 +148,7 @@ process_args(int *argc, char ***argv)
 {
 	char *a0 = (*argv)[0];
 
-	for(int ch; (ch = getopt(*argc, *argv, "s:i:p:u:nvqh")) != -1;) {
+	for(int ch; (ch = getopt(*argc, *argv, "s:i:p:u:nvqch")) != -1;) {
 		switch (ch) {
 		case 'u':{
 			s_suid = strdup(optarg);
@@ -173,6 +173,9 @@ process_args(int *argc, char ***argv)
 			break;
 		case 'h':
 			usage(stdout, a0, EXIT_SUCCESS);
+			break;
+		case 'c':
+			log_setfancy(true);
 			break;
 		case 'v':
 			s_verb++;

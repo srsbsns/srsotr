@@ -5,6 +5,8 @@
 #ifndef LOG_H
 #define LOG_H 1
 
+#include <stdbool.h>
+
 #include <syslog.h>
 
 //[DINWEC](): log with Debug, Info, Notice, Warn, Error, Critical severity.
@@ -57,6 +59,9 @@ void log_syslog(const char *ident, int facility);
 
 void log_setlvl(int lvl);
 int log_getlvl(void);
+
+void log_setfancy(bool fancy);
+bool log_getfancy(void);
 
 
 // ----- backend -----
