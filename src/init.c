@@ -55,9 +55,7 @@ init(int *argc, char ***argv)
 
 	log_setlvl(s_verb);
 
-	if (s_nodaemon)
-		log_stderr();
-	else
+	if (!s_nodaemon)
 		daemonize();
 
 	if (s_suid || s_sgid)
