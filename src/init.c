@@ -33,7 +33,10 @@ static char *s_sgid;
 static bool s_nodaemon;
 static int s_verb = LOG_WARNING;
 
-struct sett_s sett = {7776, "127.0.0.1", "irc.example.org:6667"};
+struct sett_s sett = { 7776,
+                       "127.0.0.1",
+		       "irc.example.org:6667",
+		       ""};
 
 static void process_args(int *argc, char ***argv);
 static void setugid(void);
@@ -55,11 +58,30 @@ init(int *argc, char ***argv)
 
 	log_setlvl(s_verb);
 
+	if (!sett.datadir[0]) {
+		int r = getenv_r("HOME", sett.datadir, sizeof sett.datadir);
+		if (r == -1)
+			CE("unable to locate datadir ($HOME not set?!)");
+
+		strNcat(sett.datadir, "/.srsotr", sizeof sett.datadir);
+		if (mkdir(sett.datadir, S_IRWXU) == -1 && errno != EEXIST)
+			CE("couldn't mkdir datadir '%s'", sett.datadir);
+	}
+
 	if (!s_nodaemon)
 		daemonize();
 
 	if (s_suid || s_sgid)
 		setugid();
+
+	if (chdir(sett.datadir) == -1)
+		CE("couldn't chdir() into datadir '%s'", sett.datadir);
+	
+	FILE *fp = fopen(".writetest", "w+");
+	if (!fp)
+		CE("can't write inside datadir '%s'", sett.datadir);
+	fclose(fp);
+	remove(".writetest");
 
 	signal(SIGHUP, sig_hnd);
 	signal(SIGINT, sig_hnd);
@@ -146,7 +168,7 @@ process_args(int *argc, char ***argv)
 {
 	char *a0 = (*argv)[0];
 
-	for(int ch; (ch = getopt(*argc, *argv, "s:i:p:u:nvqch")) != -1;) {
+	for(int ch; (ch = getopt(*argc, *argv, "s:i:p:u:d:nvqch")) != -1;) {
 		switch (ch) {
 		case 'u':{
 			s_suid = strdup(optarg);
@@ -168,6 +190,9 @@ process_args(int *argc, char ***argv)
 			break;
 		case 'n':
 			s_nodaemon = true;
+			break;
+		case 'd':
+			strNcpy(sett.datadir, optarg, sizeof sett.datadir);
 			break;
 		case 'h':
 			usage(stdout, a0, EXIT_SUCCESS);

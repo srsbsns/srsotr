@@ -12,6 +12,7 @@ struct sett_s {
 	unsigned short lport;
 	char lif[128];
 	char rhost[256];
+	char datadir[256];
 };
 
 const struct sett_s* init(int *argc, char ***argv);
