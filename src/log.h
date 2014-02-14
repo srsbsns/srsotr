@@ -6,6 +6,7 @@
 #define LOG_H 1
 
 #include <stdbool.h>
+#include <errno.h>
 
 #include <syslog.h>
 
