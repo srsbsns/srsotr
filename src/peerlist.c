@@ -99,7 +99,7 @@ load_list(void)
 		while (isspace(*ptr))
 			ptr++;
 
-		if (*ptr == '#' || *ptr == '\0')
+		if (*ptr == ';' || *ptr == '\0')
 			continue;
 			
 		char *end = ptr + strlen(ptr) - 1;
