@@ -14,6 +14,12 @@
 #define CASEMAPPING_STRICT_RFC1459 1
 #define CASEMAPPING_ASCII 2
 
+#define MAX_IRCARGS 16
+#define MAX_NICK_LEN 32
+#define MAX_IRC_LINE 1024
+
+#define MAX_CHAN_NAME 256
+
 void strNcat(char *dest, const char *src, size_t destsz);
 char* strNcpy(char *dst, const char *src, size_t len);
 

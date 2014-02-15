@@ -9,6 +9,7 @@
 
 //TODO improve this, use regex
 const char* peer_alias(const char *nick, const char *chan);
+bool peer_otrchan(const char *chan);
 void peer_init(void);
 
 #endif /* PEERLIST_H */

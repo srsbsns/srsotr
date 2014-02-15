@@ -27,6 +27,14 @@ smap_t s_aliasmap;
 static bool load_list(void);
 static void handle_peerline(const char *line);
 
+bool
+peer_otrchan(const char *chan)
+{
+	char tmp[MAX_CHAN_NAME];
+	itolower(tmp, sizeof tmp, chan, CASEMAPPING_RFC1459); //TODO get cm from 005
+	return smap_get(s_chanmap, tmp);
+}
+
 const char*
 peer_alias(const char *nick, const char *chan)
 {
@@ -126,22 +134,20 @@ handle_peerline(const char *line)
 		return;
 	}
 
-	char *tmp = malloc(strlen(chan)+1);
+	char tmp[MAX_CHAN_NAME];
 	itolower(tmp, sizeof tmp, chan, CASEMAPPING_RFC1459); //TODO get cm from 005
-	chan = tmp;
 
 	char *alias = strtok(NULL, "\t ");
 	if (!alias) {
 		E("parse error on line '%s'", line);
 		free(l);
-		free(tmp);
 		return;
 	}
 
-	slist_t ll = smap_get(s_chanmap, chan);
+	slist_t ll = smap_get(s_chanmap, tmp);
 
 	if (!ll)
-		smap_put(s_chanmap, chan, ll = slist_init());
+		smap_put(s_chanmap, tmp, ll = slist_init());
 
 	slist_insert(ll, 0, alias);
 
@@ -155,7 +161,6 @@ handle_peerline(const char *line)
 	while ((nick = strtok(NULL, "\t ")))
 		slist_insert(sl, 0, nick);
 
-	free(tmp);
 	free(l);
 }
 

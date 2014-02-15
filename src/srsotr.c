@@ -24,11 +24,9 @@
 #include "sckio.h"
 #include "log.h"
 
-#define MAX_IRCARGS 16
-
 void handle_client(int sck);
-static void handle_clt_msg(const char *line);
-static void handle_irc_msg(const char *line);
+static bool handle_clt_msg(const char *line);
+static bool handle_irc_msg(const char *line);
 
 const struct sett_s *settings;
 
@@ -77,9 +75,11 @@ handle_client(int sck)
 
 		if (r != 0) {
 			D("read line from client: '%s'", linebuf);
-			handle_clt_msg(linebuf);
-			sck_printf(isck, "%s\r\n", linebuf);
-			D("sent to ircd: '%s'", linebuf);
+			if (handle_clt_msg(linebuf)) {
+				sck_printf(isck, "%s\r\n", linebuf);
+				D("sent to ircd: '%s'", linebuf);
+			} else
+				D("not passed on");
 		}
 
 		char *tok[MAX_IRCARGS];
@@ -91,34 +91,60 @@ handle_client(int sck)
 
 		if (r != 0) {
 			D("read line from ircd: '%s'", linebuf);
-			handle_irc_msg(linebuf);
-			sck_printf(sck, "%s\r\n", linebuf);
-			D("sent to client: '%s'", linebuf);
+			if (handle_irc_msg(linebuf)) {
+				sck_printf(sck, "%s\r\n", linebuf);
+				D("sent to client: '%s'", linebuf);
+			} else
+				D("not passed on");
 		}
 	}
 }
-static void
+
+/* return false to prevent the message from being passed on */
+static bool
 handle_clt_msg(const char *line)
 {
-	if (strncmp(line, "PRIVMSG ", 8) == 0) {
-		N("PRIVMSG sent from client");
+	bool ret = true;
+
+	char l[MAX_IRC_LINE];
+	strNcpy(l, line, sizeof l);
+	char *tok[MAX_IRCARGS];
+	if (irc_tokenize(l, tok, MAX_IRCARGS) != 1) {
+		W("failed to tokenize line '%s'. not relaying for "
+		    "paranoia reasons.", line);
+		ret = false;
+	} else if (strcmp(tok[1], "PRIVMSG") == 0
+	    && peer_otrchan(tok[2])) {
+		N("message to otr chan!");
+		ret = false;
 	}
+
+	return ret;
 }
 
 
-static void
+/* return false to prevent the message from being passed on */
+static bool
 handle_irc_msg(const char *line)
 {
-	const char *cmdpos = line;
-	if (line[0] == ':')
-		cmdpos = strchr(line, ' ');
+	bool ret = true;
 
-	if (!cmdpos)
-		C("parse error (line: '%s')", line);
-	
-	cmdpos++;
-	
-	if (strncmp(cmdpos, "PRIVMSG ", 8) == 0) {
-		N("PRIVMSG sent from server");
+	char l[MAX_IRC_LINE];
+	strNcpy(l, line, sizeof l);
+
+	char *tok[MAX_IRCARGS];
+	if (irc_tokenize(l, tok, MAX_IRCARGS) != 1) {
+		W("failed to tokenize line '%s'. not relaying for "
+		    "paranoia reasons.", line);
+		ret = false;
+	} else if (strcmp(tok[1], "PRIVMSG") == 0 && peer_otrchan(tok[2])) {
+		char nick[MAX_NICK_LEN];
+		ircpfx_extract_nick(nick, sizeof nick, tok[0]);
+		const char *alias = peer_alias(nick, tok[2]);
+		N("message in otr chan from '%s' ('%s', canonical: '%s')!",
+		    tok[0], nick, alias);
+		ret = false;
 	}
+
+	return ret;
 }
