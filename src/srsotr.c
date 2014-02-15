@@ -18,6 +18,7 @@
 
 #include <libsrsbsns/addr.h>
 
+#include "peerlist.h"
 #include "init.h"
 #include "misc.h"
 #include "sckio.h"

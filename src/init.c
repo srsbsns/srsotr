@@ -25,6 +25,7 @@
 #include "misc.h"
 #include "log.h"
 #include "otr.h"
+#include "peerlist.h"
 
 #include "init.h"
 
@@ -82,6 +83,8 @@ init(int *argc, char ***argv)
 		CE("can't write inside datadir '%s'", sett.datadir);
 	fclose(fp);
 	remove(".writetest");
+
+	peer_init();
 
 	signal(SIGHUP, sig_hnd);
 	signal(SIGINT, sig_hnd);

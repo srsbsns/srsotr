@@ -5,4 +5,10 @@
 #ifndef PEERLIST_H
 #define PEERLIST_H 1
 
+#include <stdbool.h>
+
+//TODO improve this, use regex
+const char* peer_alias(const char *nick, const char *chan);
+void peer_init(void);
+
 #endif /* PEERLIST_H */
