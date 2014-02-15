@@ -9,7 +9,15 @@
 
 #define COUNTOF(ARR) (sizeof (ARR) / sizeof (ARR)[0])
 
+#define CASEMAPPING_RFC1459 0
+#define CASEMAPPING_STRICT_RFC1459 1
+#define CASEMAPPING_ASCII 2
+
 void strNcat(char *dest, const char *src, size_t destsz);
 char* strNcpy(char *dst, const char *src, size_t len);
+
+void itolower(char *dest, size_t destsz, const char *str, int casemap);
+int istrcasecmp(const char *n1, const char *n2, int casemap);
+int istrncasecmp(const char *n1, const char *n2, size_t len, int casemap);
 
 #endif /* MISC_H */
