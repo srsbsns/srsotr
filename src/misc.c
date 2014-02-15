@@ -8,7 +8,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
+#include "log.h"
 #include "misc.h"
 
 void
@@ -94,3 +96,86 @@ istrncasecmp(const char *n1, const char *n2, size_t len, int casemap)
 	return i;
 }
 
+
+static char*
+skip2lws(char *s, bool tab_is_ws)
+{
+	while(*s && (!isspace(*s) || (*s == '\t' && !tab_is_ws)))
+		s++;
+	return *s ? s : NULL;
+}
+
+int
+irc_tokenize(char *buf, char **tok, size_t tok_len)
+{
+	if (!buf || !tok || tok_len < 2)
+		return -1;
+
+	for(size_t i = 0; i < tok_len; ++i)
+		tok[i] = NULL;
+
+	while(isspace(*buf))
+		*buf++ = '\0';
+
+	size_t len = strlen(buf);
+	if (len == 0)
+		return 0;
+
+	if (*buf == ':')
+	{
+		tok[0] = buf + 1;
+		buf = skip2lws(buf, true);
+		if (!buf) {
+			W("parse erro, pfx but no cmd");
+			return -1;//parse err, pfx but no cmd
+		}
+		while(isspace(*buf))
+			*buf++ = '\0';
+	}
+
+	tok[1] = buf;
+	buf = skip2lws(buf, true);
+	if (buf) {
+		while(isspace(*buf))
+			*buf++ = '\0';
+	}
+
+	size_t argc = 2;
+	while(buf && *buf && argc < tok_len)
+	{
+		if (*buf == ':')
+		{
+			tok[argc++] = buf + 1;
+			break;
+		}
+		tok[argc++] = buf;
+
+		/* have seen a channel with <Tab> in its name */
+		buf = skip2lws(buf, false);
+		if (buf) {
+			while(isspace(*buf))
+				*buf++ = '\0';
+		}
+	}
+
+	return 1;
+}
+
+bool
+ircpfx_extract_nick(char *dest, size_t dest_sz, const char *pfx)
+{
+	if (!dest || !dest_sz || !pfx)
+		return false;
+	strncpy(dest, pfx, dest_sz);
+	dest[dest_sz-1] = '\0';
+
+	char *ptr = strchr(dest, '@');
+	if (ptr)
+		*ptr = '\0';
+
+	ptr = strchr(dest, '!');
+	if (ptr)
+		*ptr = '\0';
+
+	return true;
+}
