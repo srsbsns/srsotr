@@ -157,7 +157,7 @@ daemonize(void)
 		fdmax = rlim.rlim_max;
 
 	/* close all file descriptors */
-	for (int i = 0; i < fdmax; i++)
+	for (int i = 0; i <= fdmax; i++)
 		close(i);
 
 	umask(0);
